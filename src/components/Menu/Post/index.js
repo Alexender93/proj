@@ -1,9 +1,8 @@
 
-import { Card, CardContent } from '@mui/material'
-import React from 'react'
+
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import { useDispatch } from 'react-redux'
-import { Link, Navigate, useNavigate, useParams} from 'react-router-dom'
+import { Link} from 'react-router-dom'
 import { fetchRemovePost } from 'redux/slices/posts'
 export const Post = ({id, title, user, imageUrl, createdAt, viewsCount, commentCount, isEditable, isFullPost, text, tags}) => {
 const dispatch = useDispatch()
@@ -33,9 +32,11 @@ dispatch(fetchRemovePost(id));
     <div>
       (
        {isEditable ? 
-  (<button onClick = {() => {onClickRemove()
-  }}>Удалить!!!</button>,
+  (<>
+  <button onClick = {() => {onClickRemove()
+  }}>Удалить!!!</button>
   <button><Link to = {`/posts/${id}/edit`}>Редактировать</Link></button>
+  </>
   ) : ('Нельзя менять и удалять')}
   
     <div>Id: {id}</div>

@@ -13,10 +13,11 @@ const AddPost = () => {
  const navigate = useNavigate()
   const isAuth = useSelector(selectIsAuth)
   const[text, setText] = React.useState('')
-  const[isLoading, setLoading] = React.useState(false)
+  const[loading, setLoading] = React.useState(false)
   const[title, setTitle] = React.useState('')
   const[tags, setTags] = React.useState('')
   const[imageUrl, setImageUrl] = React.useState('')
+  console.log(loading)
   const inputFileRef = React.useRef(null)
   const onSubmit = async () => {
 try {
@@ -49,7 +50,7 @@ setTags(data.tags.join(','))
 
 }).catch((err)=> {
   console.log(err);
-  alert('Ошибка при получении статьи')})}}, [])
+  alert('Ошибка при получении статьи')})}}, [id])
 
 
 
