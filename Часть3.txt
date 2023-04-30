@@ -1,0 +1,61 @@
+Продолжаем делать авторизацию
+
+35) Так делать не надо я просто проверил,что мне прийдёт при отправке формы
+const onSubmit = async (values) => {
+const  data = await dispatch(fetchAuth(values))
+console.log(data)
+} //Она віполниться тогда когда все запросі корректно делані
+36) Теперь добавляем в логин в функцию онСабмит:
+const onSubmit = async (values) => {
+const  data = await dispatch(fetchAuth(values))
+if(!data.payload) {
+    alert('Не удалось авторизоваться')
+}
+if('token' in data.payload) {
+    window.localStorage.setItem('token', data.payload.token)
+}
+} //Она записівает токен и выводит сообщение: Не удалось авторизоваться
+37) Теперь сравнение токенов с бэкэндом
+Переходим в axios
+Пишем мидлвор или посредник - функция - авторизован я или нет?
+То есть есть токен или нет, если есть то отправлть его в запрос
+instance.interceptors.request.use((config) => {
+config.headers.Authorization = window.localStorage.getItem('token')
+return config;
+})
+Нужно проверять есть ли в локал storage токен или нет если есть записать в авторизєишен
+38) Теперь, я авторизован или нет?
+Добавляем фєтч в аус джс. Он взаимодейтсвует с бєкєн АусМи
+export const fetchAuthMe = createAsyncThunk(
+    'auth/fetchAuth',
+    async (params) => {
+const {data} = await axios.get('/auth/me');
+return data;
+}
+)
+39) Теперь копирую билдері: меняю на аус ми
+builder.addCase(fetchAuthMe.pending, (state) => {
+    state.data = null;
+    state.status = 'loading'
+});
+    
+    builder.addCase(fetchAuthMe.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.status ='loaded'
+        
+});
+     builder.addCase(fetchAuthMe.rejected, (state) => {
+        state.data = null;
+        state.status ='error'
+            
+})
+39) Теперь я переименовал App js
+const App = () => {
+const dispatch = useDispatch();
+const isAuth = useSelector(selectIsAuth);
+React.useEffect(() => {
+dispatch(fetchAuthMe());
+
+}, [])
+    
+return (

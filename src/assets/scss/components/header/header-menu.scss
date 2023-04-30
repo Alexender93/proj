@@ -1,0 +1,68 @@
+
+.header-menu {
+  width: 100%;
+@media (min-width: 700px) {
+@import './header-nav.scss';
+
+}
+
+&__container {
+display: flex;
+width: 100%;
+padding: 41px 46px 0px 0px;
+}
+.btn {
+&--light {
+text-decoration: none;
+
+border: 1px solid black;
+padding: 15px;
+border-radius: 10px/10px;
+}
+
+}
+
+}
+.header-navbar
+ {
+  
+  flex-grow: 1;
+display: flex;
+align-items: center;
+
+
+&__list {
+display: flex;
+gap: 40px;
+margin: 0px 40px;
+flex-grow: 1;
+
+
+list-style-type: none;
+
+
+
+}
+
+&__item {
+  text-decoration: none;
+  }
+}
+.header-actions {
+display: flex;
+gap: 10px;
+ 
+}
+
+* {
+  margin: 0;
+  padding: 0; 
+}
+
+
+
+
+/* Icon 1 */
+
+
+

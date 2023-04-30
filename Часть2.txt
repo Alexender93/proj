@@ -1,0 +1,528 @@
+1) Мєпим наши данніе с бд при этом используем переменную излоадин:
+Делаем всё в home
+ const isPostsLoading = posts.status === 'loading';
+ return (
+    <div>Home
+{(isPostsLoading ? [...Array(5)] : postItems).map((obj, index) => (
+<Post id = {obj._id}
+title ="roast the code 1"
+imageUrl = "dcsadc"
+/>
+))}
+
+    </div>
+  )
+}
+2) Делаем так, что мапим всё в параметры <Post />
+import React from 'react'
+
+import { useAppDispatch, useAppSelector } from 'redux/hooks'
+import axios from 'axios'
+import { fetchPosts } from 'redux/slices/posts';
+
+
+const Home = () => {
+ 
+
+  const dispatch = useAppDispatch();
+  const {posts, tags} = useAppSelector(state => state.posts);
+  const isPostsLoading = posts.status === 'loading';
+  React.useEffect(() => {
+    dispatch(fetchPosts());
+    
+        }, [])
+        console.log(posts)
+
+
+    
+    
+
+  return (
+    <div>Home
+{(isPostsLoading ? [...Array(5)] : posts.items).map((obj, index) => (   //Или берём массив 5 андефайнд либо postitems в которіх наши статьи
+<Post id = {obj._id}
+title ={obj.title}
+imageUrl = "dcsadc"
+/>
+))}
+
+    </div>
+  )
+}
+const Post = ({id, title, imageUrl}) => {
+return (
+<div>
+{id}{title}{imageUrl}
+</div>
+
+)
+
+}
+export default Home
+3) Но будет ошибка поскольку если вызвать сейчас, то он пока грузитьься сразу выдаст массив 5 андефаййдов и всё, а когда загрузилось, уже нечего брать, поэтому
+Поэтому добавляем условие:
+{(isPostsLoading ? [...Array(5)] : posts.items).map((obj, index) => (
+isPostsLoading ? (
+<Post key = {index} isLoading = {true} />
+) :
+<Post id = {obj._id}
+title ={obj.title}
+imageUrl = "dcsadc"
+/>
+))}
+
+а єто Post
+const Post = ({id, title, imageUrl, isLoading}) => {
+return (
+<div>
+{id}{title}{imageUrl}{isLoading}
+</div>
+
+)
+
+}   //Successfull
+4) Готовая страница:
+import React from 'react'
+
+import { useAppDispatch, useAppSelector } from 'redux/hooks'
+import axios from 'axios'
+import { fetchPosts } from 'redux/slices/posts';
+
+
+const Home = () => {
+ 
+
+  const dispatch = useAppDispatch();
+  const {posts, tags} = useAppSelector(state => state.posts);
+  const isPostsLoading = posts.status === 'loading';
+  React.useEffect(() => {
+    dispatch(fetchPosts());
+    
+        }, [])
+        console.log(posts)
+
+
+    
+    
+
+  return (
+    <div>Home
+{(isPostsLoading ? [...Array(6)] : posts.items).map((obj, index) => (
+isPostsLoading ? (
+<Post key = {index} isLoading = {true} />
+) :
+<Post id = {obj._id}
+title ={obj.title}
+imageUrl = "dcsadc"
+tags = {obj.tags}
+createdAt = {obj.createdAt}
+viewsCount = {obj.viewsCount}
+commentCount = {3}
+
+/>
+))}
+
+    </div>
+  )
+}
+const Post = ({id, title, imageUrl, tags, createdAt, viewsCount, commentCount}) => {
+return (
+<div>
+Id: {id}
+Title: {title}
+Image: {imageUrl}
+Tags: {tags}
+CreayadAt: {createdAt}
+ViewsCount: {viewsCount}
+CommentCount: {commentCount}
+
+</div>
+
+)
+
+
+}
+export default Home
+4) теперь переход в posts и будем получать тєги:
+export const fetchTags = createAsyncThunk(
+'blabla',
+async () => {
+const {data} = await axios.get('/tags')
+return {data}
+}
+
+
+)
+5) Потом на бєкєнде делаем список тегов
+app.get('/posts/tags', PostController.getLastTags)
+В контроллеры добавляем новый:
+export const getLastTags = async(req, res) => {
+try {
+const posts = await PostModel.find().limit(5).exec
+const tags = posts.map((obj) => obj.tags).flat().slice(0, 5)
+res.json(tags)
+}
+catch (err) {
+console.log(err)
+res.status(500).json({
+    message: 'Не могу получить теги'
+})
+
+}
+}
+6) Потом на фронте в хом делаем диспатч 
+  React.useEffect(() => {
+    dispatch(fetchPosts());
+    dispatch(fetchTags());
+    
+        }, [])
+        console.log(posts)
+7) Добавляем Route 
+app.get('/tags', PostController.getLastTags)
+8) Теперь делаем тоже для тегов в extrareducers
+builder.addCase(fetchTags.pending, (state) => {
+    state.tags.items = [];
+    state.tags.status = 'loading'
+});
+    
+    builder.addCase(fetchTags.fulfilled, (state, action) => {
+        state.tags.items = action.payload;
+        state.tags.status ='loaded'
+        
+});
+     builder.addCase(fetchTags.rejected, (state) => {
+        state.tags.items = [];
+        state.tags.status ='error'
+            
+})
+2.36
+7) Добавляем в мап тєги
+<Post id = {obj._id}
+title ={obj.title}
+imageUrl = "dcsadc"
+tags = {obj.tags}
+createdAt = {obj.createdAt}
+viewsCount = {obj.viewsCount}
+commentCount = {3}
+/>
+<Tags key = {index} items = {tags.items} isLoading = {isTagsLoading} />
+</div>
+))}
+
+    </div>
+  )
+8) Описіваем Tags
+const Tags = ({items}) => {
+return (
+  <div>
+ ТЭЭЭЭГИ: ({items})
+  </div>
+  )
+
+}
+8) А теперь доста'м сами статьи:
+В папке Pages -> Registration ->  FullPost .jsx
+9) Я до этого не знал куда выносить Post
+Теперь віношу єто папка Post -> Index.jsx
+10) Перходим в FullPopst
+import {useParams} from 'react-router-dom'
+
+export const FullPost = () => {
+const params = useParams(); // Получаем параметрі
+console.log(params)
+const [data, setData] = React.useState();
+const {id} = useParams();
+React.useEffect(() => {
+axios.get(`/posts/${id}`).then(res => {
+  setData(res.data) // Записать в state результат запроса
+}).catch(err => {
+  console.log(err)
+  alert('Ошибка при получении статьи')
+})
+
+}, []) //квадратніе скобки - при первом рендере запрос
+  return (
+    <div>FullPost</div>
+  )
+}
+
+export default FullPost
+11) Вс' получаем через data
+import axios from 'redux/axios.js';
+import React from 'react'
+import {useParams} from 'react-router-dom'
+import Post from 'components/Menu/Post';
+
+export const FullPost = () => {
+const params = useParams(); // Получаем параметрі
+console.log(params)
+
+const [data, setData] = React.useState();
+const [isLoading, setLoading] = React.useState(true);
+
+const {id} = useParams();
+React.useEffect(() => {
+axios.get(`/posts/${id}`).then(res => {
+  setData(res.data) // Записать в state результат запроса
+}).catch(err => {
+  console.log(err)
+  alert('Ошибка при получении статьи')
+})
+
+}, []) //квадратніе скобки - при первом рендере запрос
+if(isLoading) {
+return <Post isLoading = {isLoading} isFullPost/>
+
+}
+  return (
+    <>
+  <Post
+id = {data._id}
+title ={data.title}
+imageUrl = "dcsadc"
+tags = {data.tags}
+createdAt = {data.createdAt}
+viewsCount = {data.viewsCount}
+commentCount = {3}
+isFullPost
+/>
+<p>{data.text}</p>
+    
+    </>
+      )
+      
+      
+      
+  
+}
+12) Потом у нас не получаеться получить данніе поскольку я в state не віставил начальное значение:
+const [isLoading, setLoading] = React.useState(true);
+Типа в isLoading получил undefined тогда сразу сделаю <Post id но useEffect не успел запуститься
+13) Добавляем если загрузился то юз загрузки фолс
+axios.get(`/posts/${id}`).then(res => {
+  setData(res.data) // Записать в state результат запроса
+  setLoading(false)  // Если запроос успешен то установить юз загрузки в false
+}).catch(err => {
+  console.log(err)
+  alert('Ошибка при получении статьи')
+})
+
+}, []) //квадратніе скобки - при первом рендере запрос
+if(isLoading) {
+14) Теперь авторизация:Создаём: авторизация
+export const fetchUserData = createAsyncThunk(
+    'auth/fetchUserData',
+    async (params) => {
+const {data} = await axios.post('/auth/login', params); //Переда'м эмэил и пароль на бэкэнд
+return data;
+}
+)
+const initialState = {
+data: null,
+status: 'loading'
+    }
+const authSlice = createSlice({
+name: 'auth',
+initialState,
+extraReducers: {
+}
+})
+15) Builders:
+    builder.addCase(fetchPosts.pending, (state) => {
+        state.data = null;
+        state.status = 'loading'
+    });
+        
+        builder.addCase(fetchPosts.fulfilled, (state, action) => {
+            state.data = action.payload;
+            state.status ='loaded'
+            
+});
+         builder.addCase(fetchPosts.rejected, (state) => {
+            state.data = null;
+            state.status ='error'
+                
+})
+16) Добавляем в стор
+17) Теперь pages/login
+Будем делать авторизацию
+import {useForm} from 'react-hook-form'; //Подключаем библиотеку для форм из реакта
+
+export const Login = () => {
+const {register, handleSubmit, setError, formState: {errors, isValid}} = useForm({ //подключаем библиотеку
+defaultValues: {
+email: '',
+password: ''
+
+}
+});
+const onSubmit = (values) => {
+console.log(values);
+
+} //Она віполниться тогда когда все запросі корректно делані
+return (
+<form onSubmit = {handleSubmit(onSubmit)}> хэндл сабмит отправляет функцию онсабмит
+<input type = 'text' {...register('email', {required: 'Укажите почту'})}/> //Это поле я регистрирую для реакт хук форм
+<input type = 'text' {...register('password', {required: 'Укажите почту'})}/> //Если они зареганы в юсформ и он их будет обрабатывать
+
+
+
+</form>
+
+
+
+)
+18) Если ошибка ємєл есть то давать сообщение
+<input type = 'text' {errors.email ? message} {...register('email', {required: 'Укажите почту'})}/>
+<input type = 'text' {errors.email ? message} {...register('password', {required: 'Укажите почту'})}/>
+19) То есть если мы правильно зарегаемся, то данные прийдут в react hook 
+20) Я установил муи материал, вот что получилось, тут ещё добавлена надпись, что ошибка в заполненнии эмэил и пароль
+import {useForm} from 'react-hook-form'; //Подключаем библиотеку для форм из реакта
+import {TextField} from '@mui/material'
+export const Login = () => {
+const {register, handleSubmit, setError, formState: {errors, isValid}} = useForm({ //подключаем библиотеку
+defaultValues: {
+email: '',
+password: ''
+
+}
+});
+const onSubmit = (values) => {
+console.log(values);
+
+} //Она віполниться тогда когда все запросі корректно делані
+return (
+<form onSubmit = {handleSubmit(onSubmit)}> 
+<TextField
+className = {styles.field}
+label = 'E-Mail'
+error
+helperText = {errors.email ? message : {}} //Покажи сообщение, если нет эмэила в противнм слуае нет
+{...register('email', {required: 'Укажите почту'})} //Если не заполнено, то "Укажите почту"
+fullWidth
+/>
+<TextField
+className = {styles.field}
+label = 'Пароль'
+error
+helperText =  {errors.password ? message : {}}
+{...register('email', {required: 'Укажите почту'})} //Если не заполнено, то "Укажите почту"
+fullWidth
+/>
+</form>
+)
+}
+export default Login 
+21) Код для авторизации:
+import {useForm} from 'react-hook-form'; //Подключаем библиотеку для форм из реакта
+import {TextField} from '@mui/material'
+import Button from '@mui/material/Button';
+export const Login = () => {
+const {register, handleSubmit, setError, formState: {errors, isValid}} = useForm({ //подключаем библиотеку
+defaultValues: {
+email: '',
+password: ''
+},
+mode: 'onChange'
+});
+const onSubmit = (values) => {
+console.log(values);
+
+} //Она віполниться тогда когда все запросі корректно делані
+const message = 'You are wrong'
+return (
+<form onSubmit = {handleSubmit(onSubmit)}> 
+<TextField
+label = 'E-Mail'
+error {...Boolean(errors.email ?.message)}
+helperText = {errors.email ?.message} //Покажи сообщение, если нет эмэила в противнм слуае нет
+{...register('email', {required: 'Укажите почту'})} //Если не заполнено, то "Укажите почту"
+fullWidth
+/>
+<TextField
+label = 'Пароль'
+error {...Boolean(errors.password ?.message)}
+helperText =  {errors.password ?.message}
+{...register('password', {required: 'Укажите пароль'})} //Если не заполнено, то "Укажите почту"
+fullWidth
+/>
+<Button type = "submit" size="large" variant = "contained" fullWidth>
+Войти
+</Button>
+</form>
+
+
+
+)
+
+}
+export default Login
+22) Можно настраивать use
+const {register, handleSubmit, setError, formState: {errors, isValid}} = useForm({ //подключаем библиотеку
+defaultValues: {
+email: '',
+password: ''
+},
+mode: 'onChange'
+});
+23) Если хотим, чтобі он так реагировал на вс' то mode: all то есть оповещение об ошибке происходит то на фокусе то при  изменении и т.д
+24) Внимание!!! Есть ещ' базовій параметр на валидацию в TextField
+25) При отправке формі должен вернуться обїект onSubmit
+26) Теперь нужно вс' отправить  на бєкєнд, испоьзуя dispatch:
+Добавляем селектор и диспач на страницу
+27) Внимание!!!! в auth.js меняем название не fetchUserData а fetchAuth!
+28) Кста если мы в дэфолт запишем имя и пароль это будет как плэйсхолдер
+29) Нужно понять мі авторизовані или нет
+в аус в конце добавляем: export const selectIsAuth = state => Boolean(state.auth.data) //Эта функция проверяет есть ли в аус дата?
+30) Добавляем в login index -> export const Login = () => {
+const isAuth = useSelector(selectIsAuth)
+const isAuth = useSelector(selectIsAuth) //Авторизован или нет запишет в перем исАус
+31) Тпереь консолью проверим авторизован или нет єто в фале индекс
+},
+mode: 'onChange'
+});
+const onSubmit = (values) => {
+console.log(values);
+dispatch(fetchAuth(values)) // Values это объект в котором храняться email и pass теперь передаём на бэкэнд
+
+} //Она віполниться тогда когда все запросі корректно делані
+console.log('isAuth', isAuth);
+32) Теперь с помощью navigate переходим на главную страницу
+Добавляем в логин
+if(isAuth) {
+    return <Navigate to = "/" />
+}
+const message = 'You are wrong'
+return (
+<form onSubmit = {ha
+33)Теперь делаем в хєдере такую чтуку непонятно зачем
+const Header = () => {
+  const isAuth = useSelector(selectIsAuth)   -- - типа для авторизации
+  return (
+    <header className="header">
+      <div className='header-container'>
+33) Теперь віход из аккаунта
+В аус добавляем редюсер:
+const authSlice = createSlice({
+name: 'auth',
+initialState,
+reducers: {
+logout: (state) => {
+state.data = null,
+state.status = 'loaded'
+}
+},
+extraReducers: (builder) => {
+    builder.add
+В конце:
+export const {logout} = authSlice.actions
+34) Добавляю диспатч логаута в хэдэр она обнулит стэйты
+const Header = () => {
+  const dispatch = useDispatch()
+  const isAuth = useSelector(selectIsAuth) 
+  const onClickLogout = () => {
+    if(window.confirm('Вы действительно хотите выйти?'))
+dispatch(logout())
+
+  }
+  return (

@@ -1,0 +1,173 @@
+Frontend:
+1) В папке pages делаем файлі регтрации статей входа и т.д 
+2) В app делаем руті
+<Routes>
+<Route path = '/' element={<Home />} />
+<Route path = '/posts/:id' element={<FullPost />} />
+<Route path = '/add-post' element={<AddPost />} />
+<Route path = '/login' element={<Login />} />
+<Route path = '/register' element={<Registration />} />
+</Routes>
+
+3) Теперь делаем линким в файле хєдєр
+<div className="header-actions">
+<Link className="btn btn--light" to="/post/create">Создать свой блог</Link>
+<Link className="btn btn--light" to="/login">Войти</Link>
+<Link className="btn btn--light" to="/register">Зарегистрироваться</Link>
+</div>
+4) Теперь линки делаем в файле components/Post/index.tsx
+5) Теперь работа с redux
+файл postReducer
+import { createSlice } from "@reduxjs/toolkit";
+type Props = {
+posts: {
+    items: [],
+    status: string
+
+},
+tags: {
+    items: [],
+    status: string
+    }
+
+}
+
+
+const initialState: Props = {
+posts: {
+items: [],
+status: 'loading'
+},
+tags: {
+items: [],
+status: 'loading'
+}
+
+}
+
+export const postSlice = createSlice({
+name: 'posts',
+initialState,
+reducers: {}
+
+})
+3) Потом добавляем Store
+export const store = configureStore({
+    reducer: {
+        art: artReducer,
+    postSlice: postReducer
+    
+    }
+    
+    
+    
+    })
+4) Теперь нужно проверить, смогу ли я получить статьи вообще?
+5) В home делаем useEffect
+import React from 'react'
+
+type Props = {}
+
+const Home = (props: Props) => {
+    React.useEffect(() => {
+
+
+    }, [])
+  return (
+    <div>Home</div>
+  )
+}
+
+export default Home
+6) В редакс создаю файл axios
+import axios from "axios";
+
+
+const instance = axios.create({ //axios создаёт свою новую оболочку
+baseURL: 'http://localhost: 4444' //Єто чтобі во время запроса не писать весь путь
+
+
+})
+export default instance
+7) Теперь в хом переходим и делаем импорт axios но не сайта а с файла
+то есть настроенній аксиос 
+8) Но есть нюанс базово есть блокировка, если я на локалхост 3000 То с 4444 я не смогу взаимодействовать
+поєтому нужно установить библиотеку корс  npm install cors и сделать app.use(cors())
+9) После єтого нужно на нашем проекте дописать useEffect
+React.useEffect(() => {
+axios.get('/posts')
+
+    }, [])
+10) У нас два запроса, поєтому убираем ReactStrictNode
+11) Теперь переходим в слайс и делаем асинхронній запрос
+export const fetchPosts = createAsyncThunk(
+'posts/fetchPosts',
+async () => {
+const {data} = await axios.get('/posts')
+return data
+
+}
+)
+12) Теперь нужно отправить с помощью useDispatch
+const Home = () => {
+  const dispatch = useDispatch();
+    React.useEffect(() => {
+dispatch(fetchPosts())
+
+    }, [])
+  return (
+    <div>Home</div>
+  )
+}
+13) Я добавил extraReducers, но убрал типы, поскольку typeScrip ругаеться,
+поєтому я сделал файл js
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+
+
+
+const initialState = {
+posts: {
+items: [],
+status: 'loading'
+},
+tags: {
+items: [],
+status: 'loading'
+}
+
+}
+export const fetchPosts = createAsyncThunk(
+    'posts/fetchPosts',
+    async () => {
+    const {data} = await axios.get('/posts')
+    console.log(data)
+    return data
+    
+    }
+    )
+export const postSlice = createSlice({
+name: 'posts',
+initialState,
+reducers: {},
+extraReducers: {
+[fetchPosts.pending]: (state) => {
+state.post.items = [];     
+state.posts.status = 'loading';
+
+},
+[fetchPosts.fulfilled]: (state, action) => {
+    state.post.items = action.payload; 
+    state.posts.status ='loaded';
+    
+    },
+    [fetchPosts.rejected]: (state, action) => {
+    state.post.items = []; 
+    state.posts.status ='error';
+        
+        }
+
+}
+})
+
+export default postSlice.reducer
