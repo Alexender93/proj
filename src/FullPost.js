@@ -37,6 +37,7 @@ return <Post isLoading = {isLoading} isFullPost/>
      commentsCount = {data.commentsCount}
      tags = {data.tags}
      text = {data.text}
+     category= {data.category}
      isFullPost
     />
    

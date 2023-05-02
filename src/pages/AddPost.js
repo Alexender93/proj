@@ -17,6 +17,7 @@ const AddPost = () => {
   const[title, setTitle] = React.useState('')
   const[tags, setTags] = React.useState('')
   const[imageUrl, setImageUrl] = React.useState('')
+  const[category, setCategory] = React.useState('')
   console.log(loading)
   const inputFileRef = React.useRef(null)
   const onSubmit = async () => {
@@ -26,7 +27,8 @@ const fields = {
   title,
   tags,
   text,
-  imageUrl
+  imageUrl,
+  category
   }
 const {data} = isEditing ? 
 await axios.patch(`/posts/${id}`, fields) :
@@ -47,7 +49,7 @@ setTitle(data.title);
 setText(data.text);
 setImageUrl(data.imageUrl)
 setTags(data.tags.join(','))
-
+setCategory(data.category)
 }).catch((err)=> {
   console.log(err);
   alert('Ошибка при получении статьи')})}}, [id])
@@ -100,7 +102,11 @@ delay: 1000
   return (
     <>
     <Paper style = {{padding: 30}}>
-     
+Категория: <button onClick = {() => setCategory('first')}>Перші страви</button>
+<button onClick = {() => setCategory('second')}>Другі страви</button>
+<button onClick = {() => setCategory('drinks')}>Напої</button>
+<button onClick = {() => setCategory('crisps')}>Закуски</button>
+{category}
 <Button onClick = {() => inputFileRef.current.click()} variant = 'outlined' size = 'large'>
   Загрузить превью
 </Button>

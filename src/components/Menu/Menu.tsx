@@ -1,4 +1,4 @@
-import React from 'react'
+
 import MenuItem from 'components/Menu/MenuItem'
 import { useSelector } from 'react-redux'
 import { logout, selectIsAuth } from 'redux/slices/auth'

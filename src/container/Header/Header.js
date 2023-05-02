@@ -1,4 +1,4 @@
-import React from 'react'
+
 import 'assets/scss/components/header/header-content.scss'
 import 'assets/scss/components/header/header-menu.scss'
 import 'assets/js/main'
@@ -8,10 +8,10 @@ import 'assets/js/slider'
 import 'assets/scss/components/header/header.scss'
 import Menu from 'components/Menu/Menu'
 import { useSelector } from 'react-redux'
-import { fetchAuthMe, logout, selectIsAuth, userData } from 'redux/slices/auth'
+import {logout, selectIsAuth} from 'redux/slices/auth'
 import { useDispatch } from 'react-redux'
 import { Button } from '@mui/material'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link} from 'react-router-dom'
 
 
 

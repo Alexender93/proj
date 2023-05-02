@@ -30,6 +30,7 @@ export const fetchPosts = createAsyncThunk(
         
         
         }
+        
 
         )
         export const fetchRemovePost = createAsyncThunk('posts/fetchRemovePost', async(id) => {

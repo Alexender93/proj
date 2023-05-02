@@ -4,7 +4,7 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import { useDispatch } from 'react-redux'
 import { Link} from 'react-router-dom'
 import { fetchRemovePost } from 'redux/slices/posts'
-export const Post = ({id, title, user, imageUrl, createdAt, viewsCount, commentCount, isEditable, isFullPost, text, tags}) => {
+export const Post = ({id, title, user, imageUrl, createdAt, viewsCount, commentCount, isEditable, isFullPost, text, tags, category}) => {
 const dispatch = useDispatch()
   const onClickRemove = () => {
     if(window.confirm('Вы действительно хотите удалить?')){
@@ -27,9 +27,12 @@ dispatch(fetchRemovePost(id));
   <div>CreayadAt: {createdAt}</div>
   <div>ViewsCount: {viewsCount}</div>
   <div>CommentCount: {commentCount}</div>
+  <div>Category: {category}</div>
   <ReactMarkdown children = {text} />
   </div>)) : (
     <div>
+   
+ 
       (
        {isEditable ? 
   (<>
@@ -47,6 +50,7 @@ dispatch(fetchRemovePost(id));
    <div>ViewsCount: {viewsCount}</div>
    <div>CommentCount: {commentCount}</div>
    <div>Tags: {tags}</div>
+   <div>Category: {category}</div>
 )
    </div>) } 
 

@@ -5,8 +5,7 @@ import {useEffect} from 'react'
 import { useSelector } from "react-redux";
 import { fetchPosts, fetchTags } from 'redux/slices/posts.js';
 import {Post} from 'components/Menu/Post/index.js';
-import Tags from './Tags';
-import { Grid } from '@mui/material';
+
 const Home = () => {
     const dispatch = useDispatch()
    
@@ -34,6 +33,7 @@ const Home = () => {
         commentsCount = {obj.commentsCount}
         isEditable = {userData ?._id === obj.user._id  } //Если userData есть, то мі вітаскиваем id и сравниваем его с id в статье
         tags = {!isTagsLoading ? tags.items : []} 
+        category = {obj.category}
        />
    
         </>
