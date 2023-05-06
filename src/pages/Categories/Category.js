@@ -25,6 +25,7 @@ arr.category == ctg).map((obj, index) => (
         (
       
          <>
+
           <Post 
         id = {obj['_id']}
         title = {obj['title']}
@@ -33,7 +34,7 @@ arr.category == ctg).map((obj, index) => (
       createdAt = {obj['createdAt']}
         viewsCount = {obj['viewsCount']}
         commentsCount = {obj['commentsCount']}
-        isEditable = {userData ?._id === obj.user['_id']  } //Если userData есть, то мі вітаскиваем id и сравниваем его с id в статье
+        isEditable = {userData ?._id === obj.user['_id']  } 
         tags = {!isTagsLoading ? tags.items : []} 
         category = {obj['category']}
        />
